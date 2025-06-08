@@ -4,31 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <script type="text/javascript" src="js/plugin.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.js"></script>
     <style>
+        :root {
+            --bg: #181a20;
+            --container-bg: #23262f;
+            --accent: #6366f1;
+            --accent2: #60a5fa;
+            --accent-hover: #4f46e5;
+            --accent2-hover: #2563eb;
+            --border: #23262f;
+            --border-light: #2d2f3a;
+            --input-bg: #23262f;
+            --input-border: #353849;
+            --input-focus: #6366f1;
+            --text: #f3f4f6;
+            --text-secondary: #a1a1aa;
+            --shadow: 0 4px 24px rgba(0,0,0,0.18), 0 1.5px 4px rgba(0,0,0,0.10);
+        }
         body {
             font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-            background: #f4f6fb;
+            background: var(--bg);
             margin: 0;
             padding: 0;
+            width: 100vw;
+            height: 100vh;
             min-height: 100vh;
+            min-width: 100vw;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
+            box-sizing: border-box;
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
         }
         #container {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(0,0,0,0.04);
-            padding: 32px 28px 24px 28px;
-            min-width: 340px;
-            max-width: 400px;
+            background: var(--container-bg);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 28px 22px 20px 22px;
+            width: 100%;
+            max-width: 540px;
+            min-width: 180px;
+            max-height: 90vh;
+            margin: 4vw auto;
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: background 0.3s;
+            box-sizing: border-box;
         }
         #message {
-            margin-bottom: 18px;
-            color: #4a5568;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
             font-size: 15px;
             min-height: 22px;
             text-align: center;
@@ -36,75 +63,163 @@
         }
         #controls {
             display: flex;
-            gap: 12px;
-            margin-bottom: 18px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: nowrap;
             justify-content: center;
+            align-items: stretch;
         }
         #controls label {
             display: flex;
             flex-direction: column;
             font-size: 13px;
-            color: #6b7280;
+            color: var(--text-secondary);
             gap: 4px;
+            align-items: flex-start;
+            min-width: unset;
+            width: 100%;
         }
         #controls input[type="number"] {
             padding: 7px 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
+            border: 1px solid var(--input-border);
+            border-radius: 7px;
             font-size: 15px;
-            background: #f9fafb;
-            transition: border 0.2s;
+            background: var(--input-bg);
+            color: var(--text);
+            transition: border 0.2s, background 0.2s;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
         }
         #controls input[type="number"]:focus {
-            border: 1.5px solid #6366f1;
+            border: 1.5px solid var(--input-focus);
             outline: none;
-            background: #fff;
+            background: #23243a;
         }
         #startBtn {
             padding: 10px 22px;
-            background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%);
             color: #fff;
             border: none;
-            border-radius: 8px;
+            border-radius: 9px;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+            box-shadow: 0 2px 8px rgba(99,102,241,0.10);
             transition: background 0.2s, transform 0.1s;
-            margin-top: 18px;
+            margin-top: 14px;
+            margin-bottom: 4px;
         }
         #startBtn:hover, #startBtn:focus {
-            background: linear-gradient(90deg, #4f46e5 0%, #2563eb 100%);
+            background: linear-gradient(90deg, var(--accent-hover) 0%, var(--accent2-hover) 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        #downloadGifBtn {
+            padding: 10px 22px;
+            background: linear-gradient(90deg, var(--accent2) 0%, var(--accent) 100%);
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.10);
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 8px;
+            margin-bottom: 4px;
+            width: 100%;
+        }
+        #downloadGifBtn:hover, #downloadGifBtn:focus {
+            background: linear-gradient(90deg, var(--accent-hover) 0%, var(--accent2-hover) 100%);
             transform: translateY(-2px) scale(1.03);
         }
         #sprite-canvas {
-            border: 1.5px solid #e5e7eb;
-            background: #f3f4f6;
-            border-radius: 10px;
-            margin-top: 18px;
+            border: 1.5px solid var(--border-light);
+            background: #23243a;
+            border-radius: 12px;
+            margin-top: 14px;
             width: 100%;
-            max-width: 320px;
+            max-width: 100%;
+            min-width: 80px;
             height: auto;
             aspect-ratio: 1 / 1;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.10);
             display: block;
+            transition: background 0.3s, border 0.3s;
         }
-        @media (max-width: 480px) {
+        #darkmode-toggle {
+            margin-bottom: 10px;
+            align-self: flex-end;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        #darkmode-toggle:hover {
+            color: var(--accent2);
+        }
+        #footer {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #ff005a, #ffae00, #00ff94, #00cfff, #a259ff, #ff005a 90%);
+            background-size: 200% auto;
+            color: transparent;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbow 3s linear infinite;
+            user-select: none;
+            letter-spacing: 1px;
+            width: 100vw;
+            left: 0;
+            right: 0;
+            display: block;
+            position: relative;
+        }
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        @media (max-width: 600px) {
             #container {
-                padding: 16px 6px 12px 6px;
-                min-width: unset;
                 max-width: 98vw;
+                min-width: unset;
+                padding: 8px 1vw 8px 1vw;
+                margin: 2vw auto;
             }
             #sprite-canvas {
                 max-width: 98vw;
             }
+        }
+        /* Light mode override */
+        body.lightmode {
+            --bg: #f4f6fb;
+            --container-bg: #fff;
+            --accent: #6366f1;
+            --accent2: #60a5fa;
+            --accent-hover: #4f46e5;
+            --accent2-hover: #2563eb;
+            --border: #e5e7eb;
+            --border-light: #e5e7eb;
+            --input-bg: #f9fafb;
+            --input-border: #d1d5db;
+            --input-focus: #6366f1;
+            --text: #23262f;
+            --text-secondary: #6b7280;
+            --shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(0,0,0,0.04);
         }
     </style>
 </head>
 
 <body>
     <div id="container">
+        <button id="darkmode-toggle" title="Toggle dark/light mode">🌙 Dark Mode</button>
         <div id="message"></div>
         <div id="controls">
             <label>Rows
@@ -118,9 +233,29 @@
             </label>
         </div>
         <button id="startBtn">Animate</button>
-        <canvas id="sprite-canvas" width="256" height="256"></canvas>
+        <button id="downloadGifBtn" type="button">Download GIF</button>
+        <canvas id="sprite-canvas" width="128" height="128"></canvas>
     </div>
+    <div id="footer">Vibecoded by APX</div>
     <script>
+        // Dark mode toggle
+        const darkToggle = document.getElementById('darkmode-toggle');
+        function setDarkMode(dark) {
+            if (dark) {
+                document.body.classList.remove('lightmode');
+                darkToggle.innerHTML = '🌙 Dark Mode';
+            } else {
+                document.body.classList.add('lightmode');
+                darkToggle.innerHTML = '☀️ Light Mode';
+            }
+        }
+        let dark = true;
+        setDarkMode(dark);
+        darkToggle.onclick = () => {
+            dark = !dark;
+            setDarkMode(dark);
+        };
+
         let imageUrl = '';
         let img = new Image();
         let animating = false;
@@ -133,6 +268,33 @@
         const columnsInput = document.getElementById('columns');
         const fpsInput = document.getElementById('fps');
         const startBtn = document.getElementById('startBtn');
+        const downloadGifBtn = document.getElementById('downloadGifBtn');
+
+        function resizeCanvas() {
+            // Responsive: set canvas size to container width (square), but also allow to grow with window
+            const container = document.getElementById('container');
+            const canvas = document.getElementById('sprite-canvas');
+            // Use the smallest of container width, 90vw, or 70vh for best fit
+            const size = Math.min(
+                container.offsetWidth,
+                window.innerWidth * 0.9,
+                window.innerHeight * 0.7
+            );
+            canvas.width = size;
+            canvas.height = size;
+            // Redraw current frame if image loaded
+            if (img.complete && img.naturalWidth > 0 && imageUrl) {
+                const rows = parseInt(rowsInput.value, 10);
+                const columns = parseInt(columnsInput.value, 10);
+                const frameWidth = img.width / columns;
+                const frameHeight = img.height / rows;
+                const row = Math.floor(frame / columns);
+                const col = frame % columns;
+                drawFrame(row, col, frameWidth, frameHeight);
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
 
         function drawFrame(row, col, frameWidth, frameHeight) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -148,9 +310,11 @@
                 document.getElementById('message').textContent = 'No image selected.';
                 return;
             }
-            document.getElementById('message').textContent = 'Using image: ' + imageUrl;
+            document.getElementById('message').textContent = '';
             img.src = imageUrl;
             img.onload = function() {
+                document.getElementById('message').textContent = '';
+                resizeCanvas();
                 const rows = parseInt(rowsInput.value, 10);
                 const columns = parseInt(columnsInput.value, 10);
                 const fps = parseInt(fpsInput.value, 10);
@@ -174,17 +338,73 @@
 
         startBtn.addEventListener('click', startAnimation);
 
+        downloadGifBtn.addEventListener('click', async function() {
+            if (!imageUrl) {
+                document.getElementById('message').textContent = 'No image selected.';
+                return;
+            }
+            const rows = parseInt(rowsInput.value, 10);
+            const columns = parseInt(columnsInput.value, 10);
+            const fps = parseInt(fpsInput.value, 10);
+            const totalFrames = rows * columns;
+            const frameWidth = img.width / columns;
+            const frameHeight = img.height / rows;
+
+            // Use an offscreen canvas for GIF frames
+            const gifSize = Math.max(128, Math.min(frameWidth, frameHeight, 512));
+            const offCanvas = document.createElement('canvas');
+            offCanvas.width = gifSize;
+            offCanvas.height = gifSize;
+            const offCtx = offCanvas.getContext('2d');
+
+            const gif = new GIF({
+                workers: 2,
+                quality: 10,
+                width: gifSize,
+                height: gifSize,
+                workerScript: 'https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.worker.js'
+            });
+
+            for (let f = 0; f < totalFrames; ++f) {
+                const row = Math.floor(f / columns);
+                const col = f % columns;
+                offCtx.clearRect(0, 0, gifSize, gifSize);
+                offCtx.drawImage(
+                    img,
+                    col * frameWidth, row * frameHeight, frameWidth, frameHeight,
+                    0, 0, gifSize, gifSize
+                );
+                gif.addFrame(offCtx, {copy: true, delay: 1000 / fps});
+            }
+
+            document.getElementById('message').textContent = 'Generating GIF...';
+            gif.on('finished', function(blob) {
+                document.getElementById('message').textContent = '';
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'sprite.gif';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+            });
+            gif.render();
+        });
+
         // Eagle plugin integration
         if (window.eagle && window.eagle.onPluginCreate) {
             window.eagle.onPluginCreate(async (plugin) => {
                 let items = await eagle.item.getSelected();
                 if (items && items.length > 0) {
-                    // Prefer thumbnailURL if available, fallback to url
                     imageUrl = items[0].thumbnailURL || items[0].url || '';
                     if (imageUrl) {
-                        document.getElementById('message').textContent = 'Preview image: ' + imageUrl;
                         img.src = imageUrl;
                         img.onload = function() {
+                            document.getElementById('message').textContent = '';
+                            resizeCanvas();
                             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         };
                         img.onerror = function() {
@@ -200,6 +420,9 @@
         } else {
             document.getElementById('message').textContent = 'Eagle plugin API not available.';
         }
+
+        // Initial resize
+        window.addEventListener('DOMContentLoaded', resizeCanvas);
     </script>
 </body>
 </html>
