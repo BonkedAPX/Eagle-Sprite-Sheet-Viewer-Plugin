@@ -24,5 +24,10 @@ A modern, dark-mode Eagle plugin for previewing and animating sprite sheets, wit
 - UI & Plugin: Vibecoded by APX
 - GIF Export powered by [gif.js](https://github.com/jnordberg/gif.js)
 
+## License
+
+MIT License — Free for personal and commercial use.  
+See [LICENSE](LICENSE) for details.
+
 ---
 Enjoy animating your sprite sheets!
