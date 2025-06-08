@@ -1,0 +1,15 @@
+{
+    "id": "70fa5dd3-04e2-43ce-b589-9259ecbb158d",
+    "version": "1.0.0",
+    "platform": "all",
+    "arch": "all",
+    "name": "Sprite Sheet Viewer",
+    "logo": "/logo.png",
+    "keywords": [],
+    "devTools": false,
+    "main": {
+        "url": "index.html",
+        "width": 640,
+        "height": 480
+    }
+}

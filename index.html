@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <script type="text/javascript" src="js/plugin.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            background: #f4f6fb;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(0,0,0,0.04);
+            padding: 32px 28px 24px 28px;
+            min-width: 340px;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #message {
+            margin-bottom: 18px;
+            color: #4a5568;
+            font-size: 15px;
+            min-height: 22px;
+            text-align: center;
+            word-break: break-all;
+        }
+        #controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        #controls label {
+            display: flex;
+            flex-direction: column;
+            font-size: 13px;
+            color: #6b7280;
+            gap: 4px;
+        }
+        #controls input[type="number"] {
+            padding: 7px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 15px;
+            background: #f9fafb;
+            transition: border 0.2s;
+        }
+        #controls input[type="number"]:focus {
+            border: 1.5px solid #6366f1;
+            outline: none;
+            background: #fff;
+        }
+        #startBtn {
+            padding: 10px 22px;
+            background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 18px;
+        }
+        #startBtn:hover, #startBtn:focus {
+            background: linear-gradient(90deg, #4f46e5 0%, #2563eb 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        #sprite-canvas {
+            border: 1.5px solid #e5e7eb;
+            background: #f3f4f6;
+            border-radius: 10px;
+            margin-top: 18px;
+            width: 100%;
+            max-width: 320px;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            display: block;
+        }
+        @media (max-width: 480px) {
+            #container {
+                padding: 16px 6px 12px 6px;
+                min-width: unset;
+                max-width: 98vw;
+            }
+            #sprite-canvas {
+                max-width: 98vw;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div id="message"></div>
+        <div id="controls">
+            <label>Rows
+                <input type="number" id="rows" min="1" value="1">
+            </label>
+            <label>Columns
+                <input type="number" id="columns" min="1" value="1">
+            </label>
+            <label>FPS
+                <input type="number" id="fps" min="1" value="10">
+            </label>
+        </div>
+        <button id="startBtn">Animate</button>
+        <canvas id="sprite-canvas" width="256" height="256"></canvas>
+    </div>
+    <script>
+        let imageUrl = '';
+        let img = new Image();
+        let animating = false;
+        let frame = 0;
+        let intervalId = null;
+
+        const canvas = document.getElementById('sprite-canvas');
+        const ctx = canvas.getContext('2d');
+        const rowsInput = document.getElementById('rows');
+        const columnsInput = document.getElementById('columns');
+        const fpsInput = document.getElementById('fps');
+        const startBtn = document.getElementById('startBtn');
+
+        function drawFrame(row, col, frameWidth, frameHeight) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(
+                img,
+                col * frameWidth, row * frameHeight, frameWidth, frameHeight,
+                0, 0, canvas.width, canvas.height
+            );
+        }
+
+        function startAnimation() {
+            if (!imageUrl) {
+                document.getElementById('message').textContent = 'No image selected.';
+                return;
+            }
+            document.getElementById('message').textContent = 'Using image: ' + imageUrl;
+            img.src = imageUrl;
+            img.onload = function() {
+                const rows = parseInt(rowsInput.value, 10);
+                const columns = parseInt(columnsInput.value, 10);
+                const fps = parseInt(fpsInput.value, 10);
+                const totalFrames = rows * columns;
+                const frameWidth = img.width / columns;
+                const frameHeight = img.height / rows;
+                frame = 0;
+                if (intervalId) clearInterval(intervalId);
+                animating = true;
+                intervalId = setInterval(() => {
+                    const row = Math.floor(frame / columns);
+                    const col = frame % columns;
+                    drawFrame(row, col, frameWidth, frameHeight);
+                    frame = (frame + 1) % totalFrames;
+                }, 1000 / fps);
+            };
+            img.onerror = function() {
+                document.getElementById('message').textContent = 'Failed to load image: ' + imageUrl;
+            };
+        }
+
+        startBtn.addEventListener('click', startAnimation);
+
+        // Eagle plugin integration
+        if (window.eagle && window.eagle.onPluginCreate) {
+            window.eagle.onPluginCreate(async (plugin) => {
+                let items = await eagle.item.getSelected();
+                if (items && items.length > 0) {
+                    // Prefer thumbnailURL if available, fallback to url
+                    imageUrl = items[0].thumbnailURL || items[0].url || '';
+                    if (imageUrl) {
+                        document.getElementById('message').textContent = 'Preview image: ' + imageUrl;
+                        img.src = imageUrl;
+                        img.onload = function() {
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        };
+                        img.onerror = function() {
+                            document.getElementById('message').textContent = 'Failed to load image: ' + imageUrl;
+                        };
+                    } else {
+                        document.getElementById('message').textContent = 'Selected item has no image URL.';
+                    }
+                } else {
+                    document.getElementById('message').textContent = 'No item selected in Eagle.';
+                }
+            });
+        } else {
+            document.getElementById('message').textContent = 'Eagle plugin API not available.';
+        }
+    </script>
+</body>
+</html>
