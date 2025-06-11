@@ -247,6 +247,7 @@
                 <input type="number" id="fps" min="1" value="10">
             </label>
         </div>
+        <div id="file-debug" style="word-break:break-all;font-size:12px;color:var(--text-secondary);margin-bottom:8px;display:none"></div>
         <button id="startBtn">Animate</button>
         <button id="downloadGifBtn" type="button">Download GIF</button>
         <canvas id="sprite-canvas" width="128" height="128"></canvas>
@@ -286,6 +287,7 @@
         const fpsInput = document.getElementById('fps');
         const startBtn = document.getElementById('startBtn');
         const downloadGifBtn = document.getElementById('downloadGifBtn');
+        const fileDebug = document.getElementById('file-debug');
 
         function resizeCanvas() {
             // Responsive: set canvas size to container width (square), but also allow to grow with window
@@ -322,12 +324,24 @@
             );
         }
 
+        function showFileDebug(url) {
+            if (url) {
+                fileDebug.textContent = 'Loaded file: ' + url;
+                fileDebug.style.display = '';
+            } else {
+                fileDebug.textContent = '';
+                fileDebug.style.display = 'none';
+            }
+        }
+
         function startAnimation() {
             if (!imageUrl) {
                 document.getElementById('message').textContent = 'No image selected.';
+                showFileDebug('');
                 return;
             }
             document.getElementById('message').textContent = '';
+            showFileDebug(imageUrl);
             img.src = imageUrl;
             img.onload = function() {
                 document.getElementById('message').textContent = '';
@@ -358,8 +372,10 @@
         downloadGifBtn.addEventListener('click', async function() {
             if (!imageUrl) {
                 document.getElementById('message').textContent = 'No image selected.';
+                showFileDebug('');
                 return;
             }
+            showFileDebug(imageUrl);
             const rows = parseInt(rowsInput.value, 10);
             const columns = parseInt(columnsInput.value, 10);
             const fps = parseInt(fpsInput.value, 10);
@@ -416,7 +432,10 @@
             window.eagle.onPluginCreate(async (plugin) => {
                 let items = await eagle.item.getSelected();
                 if (items && items.length > 0) {
-                    imageUrl = items[0].thumbnailURL || items[0].url || '';
+                    // Use the actual file URL for preview and GIF export
+                    const item = items[0];
+                    imageUrl = item.fileURL || item.url || item.thumbnailURL || '';
+                    showFileDebug(imageUrl);
                     if (imageUrl) {
                         img.src = imageUrl;
                         img.onload = function() {
@@ -429,13 +448,16 @@
                         };
                     } else {
                         document.getElementById('message').textContent = 'Selected item has no image URL.';
+                        showFileDebug('');
                     }
                 } else {
                     document.getElementById('message').textContent = 'No item selected in Eagle.';
+                    showFileDebug('');
                 }
             });
         } else {
             document.getElementById('message').textContent = 'Eagle plugin API not available.';
+            showFileDebug('');
         }
 
         // Initial resize
